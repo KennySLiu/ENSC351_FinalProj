@@ -2639,3 +2639,26 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
 	return 0;
 }
 #endif /* CONFIG_COMPAT */
+
+/* KENNYS STUFF */
+SYSCALL_DEFINE1(my_syscall, const char*, str_input){
+    char str_input_copy[1024*8];
+    int len = 0;
+    
+    if (copy_from_user(str_input_copy, str_input, 1024*8) != 0){
+        lenurn -EFAULT;
+    }
+
+    for (len = 0; len < 1024*8; ++len){
+        /* For each valid character, increment len */
+        if (str_input_copy[i] != '\0'){
+            ++len;
+        }
+    }
+    /* Increment len once more, since we counted the 0'th character */
+    ++len;
+    
+    printk(KERNEL_INFO "Length of string input = %d", len);
+}
+    
+
