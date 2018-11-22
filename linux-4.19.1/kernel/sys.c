@@ -190,6 +190,35 @@ out:
 	return error;
 }
 
+
+/* KENNYS STUFF: */
+SYSCALL_DEFINE1(string_len_count, const char*, str_input){
+    char str_input_copy[1024*2];
+    int len = 0;
+
+    if (copy_from_user(str_input_copy, str_input, 1024*2) != 0){
+        return -EFAULT;
+    }
+
+    for (len = 0; len < 1024*2; ++len){
+        /* For each valid character, increment the length */
+        if (str_input_copy[len] == '\0'){
+            break;
+        }
+    }
+
+    printk(KERN_INFO "Length of string input = %d", len);
+    return 0;
+}
+
+SYSCALL_DEFINE0(testcall){
+    printk(KERN_INFO "HELLO THIS IS A TEST HAHA MY NAME IS KENNY!!!!");
+    return 0;
+}
+/* END KENNYS STUFF */
+
+
+
 SYSCALL_DEFINE3(setpriority, int, which, int, who, int, niceval)
 {
 	struct task_struct *g, *p;
@@ -2640,23 +2669,5 @@ COMPAT_SYSCALL_DEFINE1(sysinfo, struct compat_sysinfo __user *, info)
 }
 #endif /* CONFIG_COMPAT */
 
-/* KENNYS STUFF: */
-SYSCAL_DEFINE1(string_len_count, const char*, str_input){
-    char str_input_copy[1024*8];
-    int len = 0;
 
-    if (copy_from_user(str_input_copy, str_input, 1024*8) != 0){
-        return -EFAULT;
-    }
 
-    for (len = 0; len < 1024*8; ++len){
-        /* For each valid character, increment the length */
-        if (str_input_copy[i] != '\0'){
-            ++len;
-        }
-    }
-    /* Increment length once more, since we counted the 0'th char */
-    ++len;
-
-    printk(KERNEL_INFO "Length of string input = %d", len);
-}
