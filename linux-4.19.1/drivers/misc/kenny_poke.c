@@ -4,9 +4,6 @@
 #include <linux/device.h>
 #include <linux/slab.h>
 
-static int inline abs(int a, int b){
-    return a < b ? a : b;
-}
 
 static int kenny_open(struct inode* inode_pointer, struct file* file_pointer) {
   printk(KERN_INFO "Poke open called.");
@@ -30,13 +27,19 @@ static ssize_t kenny_write(struct file *file, const char *data, size_t length, l
     static int accumulated_bytes = 0;
     static long int held_ptr_value = 0;
 
+    int i = 0;
+    int curr_offset = 0;
+    size_t modified_length = length;
+    long int ptr_val = 0;
+    char* to_write = NULL;
+
     printk(KERN_INFO "Poke write called");
 
     /* curr_offset is the offset into the char* data. Each time we loop through the while, we will need 
      * to increment the curr_offset so we grab the newest data. */
 
     if (accumulated_bytes + length < 9){
-        for (int i = 0; i < length; ++i){
+        for (i = 0; i < length; ++i){
             /* Leftshift and accumulate the ptr: */
             /* Multiply 8 by i + accumulated_bytes because (i + accumulated bytes) represents
              * the number of bytes we got so far, which is what we need. */
@@ -47,28 +50,28 @@ static ssize_t kenny_write(struct file *file, const char *data, size_t length, l
         return 0;
     }
         
-    int curr_offset = 0;
-    size_t modified_length = length;
+    curr_offset = 0;
+    modified_length = length;
     while (modified_length + accumulated_bytes >= 9){ 
         modified_length -= (9 - accumulated_bytes);
 
         /* Get the pointer value: */
-        long int ptr_val = held_ptr_value;
-        for (int i = curr_offset; i < curr_offset + 8; ++i){
+        ptr_val = held_ptr_value;
+        for (i = curr_offset; i < curr_offset + 8; ++i){
             /* Leftshift and accumulate the ptr: */
             ptr_val += (data[i] << 8*((i - curr_offset) + accumulated_bytes));
         }
         curr_offset += 8;
 
         /* Write to the pointer value: */
-        char* to_write = (char*) ptr_val;
+        to_write = (char*) ptr_val;
         *to_write = data[curr_offset++];
 
         accumulated_bytes = 0;
         held_ptr_value = 0;
     }
 
-    for (int i = curr_offset; i < length; ++i){
+    for (i = curr_offset; i < length; ++i){
         held_ptr_value += (data[i] << 8*(i - curr_offset));
     }
     accumulated_bytes = length - curr_offset;

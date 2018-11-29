@@ -17,7 +17,12 @@ static int kenny_release(struct inode* inode_pointer, struct file* file_pointer)
 
 
 static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *offset_in_file){
-    printk(KERN_INFO "Get_ptr read called");
+    int i = 0;
+    void* retptr = NULL;
+    char* retptr_ptr = NULL;
+
+
+    printk(KERN_INFO "Get_ptr read called");    
 
     /* Have to emit an 8-byte value (long int) pointing to a memory area of at least 1024 bytes */
     if (length != 8){
@@ -25,11 +30,11 @@ static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *
         return 1;
     }
 
-    void* retptr = kmalloc(1024, GFP_USER);
+    retptr = kmalloc(1024, GFP_USER);
 
-    char* retptr_ptr = &retptr;
+    retptr_ptr = (char*) &retptr;
     /* Push the pointer, byte-by-byte, into the buffer */
-    for (int i = 0; i < 8; ++i){
+    for (i = 0; i < 8; ++i){
         data[i] = retptr_ptr[i];
     }
 
