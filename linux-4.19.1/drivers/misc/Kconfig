@@ -4,6 +4,18 @@
 
 menu "Misc devices"
 
+config KENNY_PEEK
+	tristate "KENNY: Hi this is peek."
+	default y
+
+config KENNY_POKE
+	tristate "KENNY: Hi this is poke."
+	default y
+
+config KENNY_GETPTR
+	tristate "KENNY: Hi this is getptr."
+	default y
+
 config SENSORS_LIS3LV02D
 	tristate
 	depends on INPUT

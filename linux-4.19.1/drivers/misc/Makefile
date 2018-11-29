@@ -58,3 +58,6 @@ obj-$(CONFIG_ASPEED_LPC_SNOOP)	+= aspeed-lpc-snoop.o
 obj-$(CONFIG_PCI_ENDPOINT_TEST)	+= pci_endpoint_test.o
 obj-$(CONFIG_OCXL)		+= ocxl/
 obj-$(CONFIG_MISC_RTSX)		+= cardreader/
+obj-$(CONFIG_KENNY_PEEK)		+= kenny_peek.o
+obj-$(CONFIG_KENNY_POKE)		+= kenny_poke.o
+obj-$(CONFIG_KENNY_GETPTR)		+= kenny_getptr.o
