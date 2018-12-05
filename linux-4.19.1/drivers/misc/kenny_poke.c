@@ -3,7 +3,7 @@
 #include <linux/fs.h>
 #include <linux/device.h>
 #include <linux/slab.h>
-
+#include <linux/uaccess.h>
 
 static int kenny_open(struct inode* inode_pointer, struct file* file_pointer) {
     printk(KERN_INFO "Poke open called.");

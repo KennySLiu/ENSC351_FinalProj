@@ -3,6 +3,7 @@
 #include <linux/fs.h>
 #include <linux/device.h>
 #include <linux/slab.h>
+#include <linux/uaccess.h>
 
 static char peek_location[8];
 
@@ -24,7 +25,7 @@ static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *
 
     printk(KERN_INFO "KENNY: Peek read called");
 
-    for (int i = 0; i < 8; ++i){
+    for (i = 0; i < 8; ++i){
         /* Leftshift each byte by 8* it's index, because that's what it is equal to. */
         ptr_val += peek_location[i] << 8*i;
     }
@@ -47,9 +48,6 @@ static ssize_t kenny_write(struct file *file, const char *data, size_t length, l
      * Do we assume the first five of the 8 bytes are actually the LSBs of the resultant pointer, 
      * while the remaining 3 now become the MSBs? It's too ill-defined. I will dictate that,
      * for my driver, users have to send exactly the 8 bytes they want to read from. */
-
-    int i = 0;
-    char* copy_of_data = kmalloc(128, GFP_KERNEL);
 
     printk(KERN_INFO "KENNY: Peek write called.");
 
