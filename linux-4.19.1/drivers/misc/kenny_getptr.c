@@ -19,8 +19,12 @@ static int kenny_release(struct inode* inode_pointer, struct file* file_pointer)
 
 static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *offset_in_file){
     void* retptr = NULL;
-    char* retptr_ptr = NULL;
+    char* debug_retptr = NULL;
 
+    /* Debugging variables: */
+    int i = 0;
+    char debug_ptr[8];
+    int net_ptr = 0;
 
     printk(KERN_INFO "KENNY: Get_ptr read called");    
 
@@ -31,17 +35,30 @@ static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *
     }
 
     retptr = kmalloc(1024, GFP_USER);
-    printk(KERN_INFO "KENNY DEBUG: Get_ptr &retptr value: %p", &retptr);
+    memset(retptr, 0, 1024);
+    printk(KERN_INFO "KENNY DEBUG: Get_ptr retptr value as a pointer: %p", retptr);
+    printk(KERN_INFO "KENNY DEBUG: Get_ptr retptr value as a hex num: %X", retptr);
 
-    retptr_ptr = (char*) &retptr;
-    printk(KERN_INFO "KENNY DEBUG: Get_ptr retptr_ptr value: %p", retptr_ptr);
-
-    /* Copy to pointer into the user-buffer */
-    if (copy_to_user(data, retptr_ptr, 8) != 0){
+    /* Copy the pointer into the user-buffer */
+    if (copy_to_user(data, &retptr, 8) != 0){
         printk(KERN_INFO "KENNY: Get_ptr call couldn't copy data to user! Erroring out");
         return -EFAULT;
     }
 
+    /* Debug just to see what happened when we copied it over (worried about endianness here): */
+    debug_retptr = (char*) &retptr;
+    for (i = 0; i < 8; ++i){
+        printk(KERN_INFO "KENNY DEBUG: Get_ptr retptr byte-by-byte print: %d", debug_retptr[i]);
+    }
+
+    copy_from_user(debug_ptr, data, 8);
+    for (i = 0; i < 8; ++i){
+        net_ptr += debug_ptr[i] << 8*i;
+        printk(KERN_INFO "KENNY DEBUG: Get_ptr debugptr byte-by-byte print: %d", debug_ptr[i]);
+    }
+    printk(KERN_INFO "KENNY DEBUG: Get_ptr re-assembled ptr value as a ptr: %p", net_ptr);
+    printk(KERN_INFO "KENNY DEBUG: Get_ptr re-assembled ptr value as hex #: %X", net_ptr);
+    
     return 8;
 }
 

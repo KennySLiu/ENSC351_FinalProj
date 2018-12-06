@@ -20,19 +20,20 @@ static int kenny_release(struct inode* inode_pointer, struct file* file_pointer)
 
 
 static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *offset_in_file){
-    int i = 0;
     char* ptr_val = NULL;
 
     printk(KERN_INFO "KENNY: Peek read called");
 
-    for (i = 0; i < 8; ++i){
-        /* Leftshift each byte by 8* it's index, because that's what it is equal to. */
-        ptr_val += peek_location[i] << 8*i;
+    if (length != 1){
+        printk(KERN_INFO "KENNY DEBUG: Peek read issued with a length not equal to 1. Erroring out.");
+        return -EFAULT;
     }
+
+    memcpy(&ptr_val, peek_location, 1);
 
     printk(KERN_INFO "KENNY DEBUG: Peek read calculated the peek pointer to be = %p.", ptr_val);
 
-    if (copy_to_user(data, ptr_val, 8) != 0){
+    if (copy_to_user(data, ptr_val, 1) != 0){
         printk(KERN_INFO "KENNY DEBUG: Peek read had an issue transferring the data back to user! Erroring out.");
         return -EFAULT;
     }
