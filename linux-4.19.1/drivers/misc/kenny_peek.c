@@ -29,7 +29,7 @@ static ssize_t kenny_read(struct file *file, char *data, size_t length, loff_t *
         return -EFAULT;
     }
 
-    memcpy(&ptr_val, peek_location, 1);
+    memcpy(&ptr_val, peek_location, 8);
 
     printk(KERN_INFO "KENNY DEBUG: Peek read calculated the peek pointer to be = %p.", ptr_val);
 

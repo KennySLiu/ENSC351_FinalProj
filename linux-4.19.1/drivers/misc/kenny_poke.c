@@ -90,7 +90,6 @@ static ssize_t kenny_write(struct file *file, const char *data, size_t length, l
     static int accumulated_bytes = 0;
     static char copy_of_data[9] = { 0 };
     
-    int i = 0;
     int modified_length = length;
     int curr_offset = 0;
     char* location_to_write = NULL;
@@ -110,11 +109,6 @@ static ssize_t kenny_write(struct file *file, const char *data, size_t length, l
 
     modified_length = length;
     while (modified_length + accumulated_bytes >= 9){
-        if (i > 3){
-            printk(KERN_INFO "KENNY DEBUG: Poke write, i overflowed... crap");
-            return 5;
-        }
-        ++i;
         modified_length -= (9 - accumulated_bytes);
 
         memcpy( (copy_of_data + accumulated_bytes) , (mydata + curr_offset) , (9 - accumulated_bytes) );
