@@ -112,10 +112,11 @@ static ssize_t kenny_write(struct file *file, const char *data, size_t length, l
         modified_length -= (9 - accumulated_bytes);
 
         memcpy( (copy_of_data + accumulated_bytes) , (mydata + curr_offset) , (9 - accumulated_bytes) );
-        curr_offset += 8;
+        /* Increase the curr_offset by the amount we just wrote: */
+        curr_offset += (9 - accumulated_bytes);
         
         memcpy( &location_to_write, copy_of_data, 8 );
-        *location_to_write = copy_of_data[curr_offset++];
+        *location_to_write = copy_of_data[8];
         printk(KERN_INFO "KENNY DEBUG: Poke wrote to location %p, a value of %d", location_to_write, copy_of_data[curr_offset - 1]);
 
         accumulated_bytes = 0;
